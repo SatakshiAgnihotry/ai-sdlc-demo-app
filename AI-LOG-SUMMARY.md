@@ -37,3 +37,21 @@ Opus 5.5).
   **Human decision:** first approval above 500,000 may come from a Manager or a Director, second
   must be a Director; invoice creation is left untouched by this feature. Both recorded in
   `AGENTS.md` as assumptions to also document in `ASSIGNMENT.md`.
+- **2026-11-06** — Step 4, "show context matters": ran the identical planning-only ticket through
+  two fresh Plan sub-agents, one reading a temporary worktree at the pre-session commit
+  (original `AGENTS.md`), one reading the current repo (extended `AGENTS.md`). Both caught the
+  `FakeInvoiceRepository.Update` no-op trap on their own, but only the extended-context agent
+  checked for the OpenSpec change `AGENTS.md` now points to, found it doesn't exist yet, and
+  explicitly declined to guess the Approver/Admin vs Manager/Director role relationship in the
+  controller wiring rather than silently assuming it. It also quoted the exact mutation command,
+  the exact review prompt/verdict system, and the exact commit format — all newly added to
+  `AGENTS.md`. Nothing from either plan was implemented; the worktree was removed afterward.
+- **2026-11-06** — Step 5: installed OpenSpec 1.16.0 via `npx` (no global install), ran
+  `openspec init`, and wrote the `approval-limits-by-role` change (proposal, spec delta, design,
+  tasks), asking the user to resolve every remaining open question first. **Human decisions:**
+  pending-second-approval is a new `InvoiceStatus` value; declined attempts reuse the existing
+  409 path; Reject always wins over a pending second approval; the UI shows the reason inline;
+  and Approver/Admin keep their current unlimited behavior completely unchanged, with the
+  resulting two-approver bypass documented as a deliberate, accepted consequence. One UI question
+  had to be re-asked after the user caught it conflating a declined attempt with the separate
+  Reject action. `openspec validate --strict` passes.
