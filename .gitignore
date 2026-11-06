@@ -8,3 +8,6 @@ node_modules/
 .env
 test-results/
 playwright-report/
+
+# Workshop/reference material and session working notes — not assignment deliverables
+SESSION-HANDOFF.md
