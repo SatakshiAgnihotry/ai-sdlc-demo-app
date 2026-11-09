@@ -2,11 +2,11 @@
 
 ## 1. Data model and policy scaffolding
 
-- [ ] 1.1 Add the Manager/Director role concept and the pure limit/role-check policy (50,000 /
+- [x] 1.1 Add the Manager/Director role concept and the pure limit/role-check policy (50,000 /
       500,000, second-approver-must-be-Director) to InvoiceApp.Domain; verify `dotnet build
       backend/InvoiceApp.sln` succeeds (Step 6 landed the 50,000/500,000 single-approver limits;
-      the second-approver-must-be-Director check is still pending in Step 7)
-- [ ] 1.2 Add `PendingSecondApproval` to `InvoiceStatus` and `FirstApprovedBy`/`FirstApprovedAt`
+      Step 7 added the second-approver-must-be-Director check)
+- [x] 1.2 Add `PendingSecondApproval` to `InvoiceStatus` and `FirstApprovedBy`/`FirstApprovedAt`
       to `Invoice`; verify the existing 7 pre-existing tests still compile and pass via
       `dotnet test backend/InvoiceApp.sln`
 
@@ -24,17 +24,17 @@
 
 ## 3. Two-approver rule above 500,000 (Step 7 commit)
 
-- [ ] 3.1 Implement first-approval recording (→ `PendingSecondApproval`, records
+- [x] 3.1 Implement first-approval recording (→ `PendingSecondApproval`, records
       `FirstApprovedBy`/`At`) and second-approval completion (Director only, distinct user) in
       `ApprovalService`; verify with unit tests for both transitions
-- [ ] 3.2 Unit test: same user cannot be both approvers, isolated so only identity differs (same
+- [x] 3.2 Unit test: same user cannot be both approvers, isolated so only identity differs (same
       valid role on both attempts); verify `dotnet test` passes and the invoice is unchanged
       after the decline
-- [ ] 3.3 Unit test: second approval declined if the second approver is not a Director; verify
+- [x] 3.3 Unit test: second approval declined if the second approver is not a Director; verify
       the unchanged-invoice snapshot as well
-- [ ] 3.4 Unit test: Reject always wins — Reject on a `PendingSecondApproval` invoice moves
+- [x] 3.4 Unit test: Reject always wins — Reject on a `PendingSecondApproval` invoice moves
       straight to `Rejected`; verify via `dotnet test`
-- [ ] 3.5 Unit test: Approver/Admin's existing unlimited single-step behavior is unchanged,
+- [x] 3.5 Unit test: Approver/Admin's existing unlimited single-step behavior is unchanged,
       including finalizing a `PendingSecondApproval` invoice in one step; verify via `dotnet test`
 
 ## 4. UI: show the decline reason

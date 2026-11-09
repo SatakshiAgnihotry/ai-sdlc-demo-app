@@ -33,4 +33,12 @@ public static class ApprovalLimitPolicy
             $"{amount:N0} and needs a second Director approval.",
         _ => $"Role '{role}' is not permitted to approve invoices."
     };
+
+    public static string SecondApprovalDeclineReason(string role) =>
+        $"Role '{role}' cannot give the second approval on this invoice; the second approval " +
+        "must come from a Director.";
+
+    public static string SameApproverDeclineReason(string approver) =>
+        $"{approver} already gave the first approval on this invoice; the second approval must " +
+        "come from a different Director.";
 }

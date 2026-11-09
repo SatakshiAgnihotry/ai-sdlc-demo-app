@@ -61,3 +61,15 @@ Opus 5.5).
   (up from 7). Live-smoke-tested against the running API: a Manager's 80,000 approval attempt was
   declined at 409 with the exact reason text; a Director then approved the same invoice at 200.
   The two-approver rule is explicitly deferred to Step 7.
+- **2026-11-09** — Step 7: implemented the two-approver rule above 500,000. New
+  `PendingSecondApproval` status and `FirstApprovedBy`/`FirstApprovedAt` fields; a Manager or
+  Director's approval on an invoice over 500,000 now registers as a first approval instead of
+  being declined; a second, distinct Director completes it; Approver/Admin still finalize any
+  amount, including a pending-second-approval invoice, in one step; Reject always wins. Caught a
+  real contradiction between two already-approved spec.md requirements for a Director approving
+  alone above 500,000 (hard decline-and-unchanged vs. succeed-as-first-approval) and asked the
+  user rather than guessing. **Human decision:** register it as a first approval; the old Step 6
+  decline test at that boundary was rewritten accordingly. `dotnet test`: 33 passed (up from 26).
+  Live-smoke-tested the full flow against the running API: first approval, second-approver-not-
+  Director decline, same-user decline, and Admin one-step finalization all behaved exactly as
+  designed.
