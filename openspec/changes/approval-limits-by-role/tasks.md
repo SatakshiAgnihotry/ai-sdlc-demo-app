@@ -39,9 +39,11 @@
 
 ## 4. UI: show the decline reason
 
-- [ ] 4.1 Update `wwwroot/app.js` to display the server's returned reason as inline text next to
+- [x] 4.1 Update `wwwroot/app.js` to display the server's returned reason as inline text next to
       the Approve action on a 409 decline; verify manually by running the app and triggering a
-      declined approval in the browser
+      declined approval in the browser (verified live via the Playwright MCP browser tool: a
+      Manager's declined approval on an 80,000 invoice shows the exact reason as an alert next to
+      that invoice's Approve button, scoped only to that invoice)
 
 ## 5. Mutation testing ("after" run)
 

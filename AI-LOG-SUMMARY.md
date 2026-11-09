@@ -83,3 +83,10 @@ Opus 5.5).
   invoice). Second run: overall 66.25%, `ApprovalLimitPolicy.cs` 100.00% (0 survivors),
   `ApprovalService.cs` 82.22%, with every remaining survivor being the accepted Update-no-op trap
   or pre-existing message text in untouched code. `dotnet test`: 38 passed (up from 33).
+- **2026-11-09** — Step 8 (UI, task 4.1): changed `wwwroot/app.js`'s decline-reason display from a
+  single shared paragraph below the whole pending-approvals list to a per-invoice alert next to
+  each invoice's Approve button, matching spec.md's literal wording. Verified live via the
+  Playwright MCP browser tool (not just by reading the code): a Manager's declined approval on an
+  80,000 invoice shows the exact reason next to that invoice only, with the other pending
+  invoices unaffected. This was a prerequisite the user and I identified before the Playwright
+  e2e test, since the test needs a real reason displayed to assert against.
