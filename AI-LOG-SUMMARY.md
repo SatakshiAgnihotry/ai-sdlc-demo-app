@@ -90,3 +90,11 @@ Opus 5.5).
   80,000 invoice shows the exact reason next to that invoice only, with the other pending
   invoices unaffected. This was a prerequisite the user and I identified before the Playwright
   e2e test, since the test needs a real reason displayed to assert against.
+- **2026-11-09** — Step 8 (Playwright e2e): added the first page object and test in `e2e/`
+  (previously only `.gitkeep` placeholders). `e2e/pages/invoice-approvals-page.ts` covers login,
+  create invoice, submit, approve, and reading the decline-reason alert, using `getByRole`
+  locators only, per AGENTS.md. `e2e/tests/declined-approval.spec.ts` logs in as `demo.manager`,
+  creates an 80,000 invoice, submits it, attempts to approve, and asserts the exact decline-reason
+  text next to that invoice. **Human decision:** user approved `npm install` and
+  `npx playwright install chromium` before either ran. `npm test`: 1 passed; Playwright's own
+  webServer management started and stopped the dev server cleanly.

@@ -58,10 +58,10 @@
 
 ## 6. Playwright e2e test
 
-- [ ] 6.1 Add a page object for the invoice/approval UI under `e2e/pages`, using role-based
+- [x] 6.1 Add a page object for the invoice/approval UI under `e2e/pages`, using role-based
       locators per AGENTS.md; verify it compiles/typechecks
-- [ ] 6.2 Add one Playwright test: a declined over-limit approval through the UI, asserting the
-      clear reason is shown; verify via `npm test` in `e2e/`
+- [x] 6.2 Add one Playwright test: a declined over-limit approval through the UI, asserting the
+      clear reason is shown; verify via `npm test` in `e2e/` (1 passed)
 
 ## 7. Self-review and PR
 
