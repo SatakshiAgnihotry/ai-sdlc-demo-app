@@ -54,4 +54,28 @@ public class ApprovalLimitPolicyTests
         Assert.False(string.IsNullOrWhiteSpace(ApprovalLimitPolicy.DeclineReason(ApprovalRoles.Director, 600_000m)));
         Assert.False(string.IsNullOrWhiteSpace(ApprovalLimitPolicy.DeclineReason("Clerk", 1m)));
     }
+
+    [Fact]
+    public void DeclineReason_ForDirectorStatesTheLimitAndTheInvoiceAmount()
+    {
+        Assert.Equal(
+            "A Director cannot approve invoices over 500,000 alone; this invoice is 600,000 and needs a second Director approval.",
+            ApprovalLimitPolicy.DeclineReason(ApprovalRoles.Director, 600_000m));
+    }
+
+    [Fact]
+    public void SecondApprovalDeclineReason_NamesTheRoleAndRequiresADirector()
+    {
+        Assert.Equal(
+            "Role 'Manager' cannot give the second approval on this invoice; the second approval must come from a Director.",
+            ApprovalLimitPolicy.SecondApprovalDeclineReason("Manager"));
+    }
+
+    [Fact]
+    public void SameApproverDeclineReason_NamesTheApproverAndRequiresADifferentDirector()
+    {
+        Assert.Equal(
+            "demo.director already gave the first approval on this invoice; the second approval must come from a different Director.",
+            ApprovalLimitPolicy.SameApproverDeclineReason("demo.director"));
+    }
 }

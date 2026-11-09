@@ -45,11 +45,14 @@
 
 ## 5. Mutation testing ("after" run)
 
-- [ ] 5.1 Run the mutation command from AGENTS.md against `InvoiceApp.Domain` and compare against
+- [x] 5.1 Run the mutation command from AGENTS.md against `InvoiceApp.Domain` and compare against
       the baseline (`StrykerOutput/baseline`); verify by recording the new overall and per-file
-      scores
-- [ ] 5.2 For any surviving mutant inside the new approval-limit logic, strengthen the specific
+      scores (baseline 30.77% overall → 56.25% after Step 7; see AI-LOG-SUMMARY.md for the full
+      before/after breakdown)
+- [x] 5.2 For any surviving mutant inside the new approval-limit logic, strengthen the specific
       test that should have caught it; verify by re-running Stryker and confirming it's killed
+      (second run: 66.25% overall, ApprovalLimitPolicy.cs 100.00%, ApprovalService.cs 82.22%;
+      every remaining survivor is the accepted Update-no-op trap or pre-existing untouched code)
 
 ## 6. Playwright e2e test
 

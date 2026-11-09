@@ -73,3 +73,13 @@ Opus 5.5).
   Live-smoke-tested the full flow against the running API: first approval, second-approver-not-
   Director decline, same-user decline, and Admin one-step finalization all behaved exactly as
   designed.
+- **2026-11-09** — Step 8 (mutation testing): ran `dotnet-stryker` against `InvoiceApp.Domain`
+  after Step 7. First run: overall 56.25% (baseline 30.77%); `ApprovalLimitPolicy.cs` 62.50%;
+  `ApprovalService.cs` 77.78% (baseline 60.00%). Classified every surviving mutant in the two
+  files this feature owns as either a real gap or the known `FakeInvoiceRepository.Update`-no-op
+  trap AGENTS.md itself says not to chase. Strengthened the decline-reason tests (exact text
+  instead of a not-empty check that let half a concatenated message mutate away undetected) and
+  added two missing-coverage tests (unknown role above the Director limit; Reject on a Draft
+  invoice). Second run: overall 66.25%, `ApprovalLimitPolicy.cs` 100.00% (0 survivors),
+  `ApprovalService.cs` 82.22%, with every remaining survivor being the accepted Update-no-op trap
+  or pre-existing message text in untouched code. `dotnet test`: 38 passed (up from 33).

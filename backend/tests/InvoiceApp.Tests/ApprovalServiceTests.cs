@@ -208,6 +208,31 @@ public class ApprovalServiceTests
         Assert.Equal("Pricing error", result.DecisionNote);
     }
 
+    [Fact]
+    public void Approve_UnknownRoleIsDeclinedEvenOnAnInvoiceAboveTheDirectorLimit()
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = 600_000m;
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+
+        var before = Snapshot(invoice);
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => service.Approve("INV-1", "demo.clerk", "Clerk"));
+
+        Assert.Equal("Role 'Clerk' is not permitted to approve invoices.", exception.Message);
+        AssertUnchanged(before, repository.GetById("INV-1")!);
+    }
+
+    [Fact]
+    public void Reject_RejectsInvoiceThatIsStillADraft()
+    {
+        var service = ServiceFor(InvoiceWith("INV-1", InvoiceStatus.Draft));
+
+        Assert.Throws<InvalidOperationException>(() => service.Reject("INV-1", "demo.approver", "Duplicate invoice"));
+    }
+
     private static object Snapshot(Invoice invoice) => new
     {
         invoice.Status,
