@@ -21,17 +21,19 @@ or equal to 50,000, and SHALL be declined, with a clear reason, from approving a
 
 ### Requirement: Director approval limit
 A user with the Director role SHALL be permitted to approve an invoice with an amount less than
-or equal to 500,000, and SHALL be declined, with a clear reason, from single-handedly approving a
-greater amount.
+or equal to 500,000 in a single step. A Director's approval on a greater amount SHALL NOT finalize
+the invoice alone; it SHALL instead be recorded as the first of the two approvals required by the
+Two-approver rule below.
 
 #### Scenario: Director approves within limit
 - **WHEN** a user with role Director approves an invoice of amount less than or equal to 500,000
 - **THEN** the invoice SHALL move to the Approved status
 
-#### Scenario: Director declined above limit alone
-- **WHEN** a user with role Director attempts to approve, as the only approver, an invoice of
-  amount greater than 500,000
-- **THEN** the attempt SHALL be declined with a clear reason and the invoice SHALL remain unchanged
+#### Scenario: Director above limit does not finalize alone
+- **WHEN** a user with role Director approves, as the first approver, an invoice of amount greater
+  than 500,000
+- **THEN** the invoice SHALL move to the PendingSecondApproval status rather than Approved, per
+  the Two-approver rule below
 
 ### Requirement: Two-approver rule above 500,000
 An invoice with amount greater than 500,000 SHALL require two distinct approvals before moving

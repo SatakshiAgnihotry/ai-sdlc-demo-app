@@ -40,7 +40,7 @@
   async function refresh() {
     const invoices = await api('/invoices');
     renderInvoices(invoices);
-    renderPending(invoices.filter((i) => i.status === 'PendingApproval'));
+    renderPending(invoices.filter((i) => i.status === 'PendingApproval' || i.status === 'PendingSecondApproval'));
   }
 
   function renderInvoices(invoices) {

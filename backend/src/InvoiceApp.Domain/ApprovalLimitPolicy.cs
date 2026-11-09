@@ -24,6 +24,9 @@ public static class ApprovalLimitPolicy
         _ => false
     };
 
+    // The Director branch below is unreachable through ApprovalService.Approve today: a Director
+    // above DirectorLimit is routed to the two-approver first-approval path before this is ever
+    // called, never declined. Kept for defense-in-depth should that routing ever change.
     public static string DeclineReason(string role, decimal amount) => role switch
     {
         ApprovalRoles.Manager =>

@@ -98,3 +98,17 @@ Opus 5.5).
   text next to that invoice. **Human decision:** user approved `npm install` and
   `npx playwright install chromium` before either ran. `npm test`: 1 passed; Playwright's own
   webServer management started and stopped the dev server cleanly.
+- **2026-11-09** — Step 9 (self-review): ran the `reviewer` sub-agent against the full
+  `main...HEAD` diff (52 files) with the exact workshop prompt and the `pr-review` skill's
+  checklist/table format. It found 4 issues: High — `app.js` never showed
+  `PendingSecondApproval` invoices in the UI, making the two-approver flow API-only; Medium —
+  `spec.md`'s old "Director declined above limit alone" scenario contradicted the actual Step 7
+  behavior; two Low findings (a dead-code decline-reason branch; no e2e test for the two-approver
+  flow). I recommended fixed/fixed/dismissed/dismissed. **Human decision:** user approved all
+  four recommended verdicts as given. Fixed the High and Medium findings (`app.js` filter now
+  includes `PendingSecondApproval`; `spec.md` rewritten and re-validated with
+  `openspec validate --strict`); added a one-line defensive comment for the dismissed dead-code
+  finding instead of deleting it. `dotnet test`: 38 passed. Verified the UI fix live via the
+  Playwright MCP browser tool: a 600,000 invoice's first Director approval kept it visible in the
+  Approvals tab, and a second attempt by the same Director correctly showed the same-user decline
+  reason inline.
