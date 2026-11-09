@@ -34,7 +34,7 @@ public class ApprovalServiceTests
     {
         var service = ServiceFor(InvoiceWith("INV-1", InvoiceStatus.PendingApproval));
 
-        var result = service.Approve("INV-1", "demo.approver");
+        var result = service.Approve("INV-1", "demo.approver", "Approver");
 
         Assert.Equal(InvoiceStatus.Approved, result.Status);
         Assert.Equal("demo.approver", result.DecidedBy);
@@ -46,7 +46,7 @@ public class ApprovalServiceTests
     {
         var service = ServiceFor(InvoiceWith("INV-1", InvoiceStatus.Draft));
 
-        Assert.Throws<InvalidOperationException>(() => service.Approve("INV-1", "demo.approver"));
+        Assert.Throws<InvalidOperationException>(() => service.Approve("INV-1", "demo.approver", "Approver"));
     }
 
     [Fact]
@@ -54,7 +54,94 @@ public class ApprovalServiceTests
     {
         var service = ServiceFor();
 
-        Assert.Throws<KeyNotFoundException>(() => service.Approve("INV-404", "demo.approver"));
+        Assert.Throws<KeyNotFoundException>(() => service.Approve("INV-404", "demo.approver", "Approver"));
+    }
+
+    [Theory]
+    [InlineData("Approver")]
+    [InlineData("Admin")]
+    public void Approve_ApproverAndAdminApproveAnyAmount(string role)
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = 900_000m;
+        var service = ServiceFor(invoice);
+
+        var result = service.Approve("INV-1", "demo.user", role);
+
+        Assert.Equal(InvoiceStatus.Approved, result.Status);
+    }
+
+    [Theory]
+    [InlineData(50_000)]
+    [InlineData(1)]
+    public void Approve_ManagerApprovesWithinLimit(decimal amount)
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = amount;
+        var service = ServiceFor(invoice);
+
+        var result = service.Approve("INV-1", "demo.manager", "Manager");
+
+        Assert.Equal(InvoiceStatus.Approved, result.Status);
+    }
+
+    [Fact]
+    public void Approve_ManagerDeclinedJustAboveLimit()
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = 50_000.01m;
+        var service = ServiceFor(invoice);
+
+        Assert.Throws<InvalidOperationException>(() => service.Approve("INV-1", "demo.manager", "Manager"));
+    }
+
+    [Theory]
+    [InlineData(500_000)]
+    [InlineData(1)]
+    public void Approve_DirectorApprovesWithinLimit(decimal amount)
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = amount;
+        var service = ServiceFor(invoice);
+
+        var result = service.Approve("INV-1", "demo.director", "Director");
+
+        Assert.Equal(InvoiceStatus.Approved, result.Status);
+    }
+
+    [Fact]
+    public void Approve_DirectorDeclinedJustAboveLimitAlone()
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = 500_000.01m;
+        var service = ServiceFor(invoice);
+
+        Assert.Throws<InvalidOperationException>(() => service.Approve("INV-1", "demo.director", "Director"));
+    }
+
+    [Fact]
+    public void Approve_DeclinedAttemptLeavesInvoiceCompletelyUnchanged()
+    {
+        var invoice = InvoiceWith("INV-1", InvoiceStatus.PendingApproval);
+        invoice.Amount = 80_000m;
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+
+        var before = new
+        {
+            invoice.Status,
+            invoice.DecidedBy,
+            invoice.DecidedAt,
+            invoice.DecisionNote
+        };
+
+        Assert.Throws<InvalidOperationException>(() => service.Approve("INV-1", "demo.manager", "Manager"));
+
+        var after = repository.GetById("INV-1")!;
+        Assert.Equal(before.Status, after.Status);
+        Assert.Equal(before.DecidedBy, after.DecidedBy);
+        Assert.Equal(before.DecidedAt, after.DecidedAt);
+        Assert.Equal(before.DecisionNote, after.DecisionNote);
     }
 
     [Fact]

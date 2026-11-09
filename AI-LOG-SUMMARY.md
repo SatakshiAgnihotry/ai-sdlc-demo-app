@@ -55,3 +55,9 @@ Opus 5.5).
   resulting two-approver bypass documented as a deliberate, accepted consequence. One UI question
   had to be re-asked after the user caught it conflating a declined attempt with the separate
   Reject action. `openspec validate --strict` passes.
+- **2026-11-06** — Step 6: implemented single-approver limits (Manager ≤50,000, Director
+  ≤500,000, Approver/Admin unrestricted) via a new `ApprovalLimitPolicy`, threaded through
+  `ApprovalService`/`ApprovalsController`, with demo accounts and tests. `dotnet test`: 26 passed
+  (up from 7). Live-smoke-tested against the running API: a Manager's 80,000 approval attempt was
+  declined at 409 with the exact reason text; a Director then approved the same invoice at 200.
+  The two-approver rule is explicitly deferred to Step 7.

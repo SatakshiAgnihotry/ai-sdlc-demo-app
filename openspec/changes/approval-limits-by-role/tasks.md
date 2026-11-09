@@ -4,20 +4,21 @@
 
 - [ ] 1.1 Add the Manager/Director role concept and the pure limit/role-check policy (50,000 /
       500,000, second-approver-must-be-Director) to InvoiceApp.Domain; verify `dotnet build
-      backend/InvoiceApp.sln` succeeds
+      backend/InvoiceApp.sln` succeeds (Step 6 landed the 50,000/500,000 single-approver limits;
+      the second-approver-must-be-Director check is still pending in Step 7)
 - [ ] 1.2 Add `PendingSecondApproval` to `InvoiceStatus` and `FirstApprovedBy`/`FirstApprovedAt`
       to `Invoice`; verify the existing 7 pre-existing tests still compile and pass via
       `dotnet test backend/InvoiceApp.sln`
 
 ## 2. Single-approver limits (Step 6 commit)
 
-- [ ] 2.1 Thread role through `ApprovalService.Approve(invoiceId, approver, role)` and enforce
+- [x] 2.1 Thread role through `ApprovalService.Approve(invoiceId, approver, role)` and enforce
       Manager ≤50,000 / Director ≤500,000 for amounts ≤500,000; verify by new unit tests for
       success and decline-above-limit for each role, including boundary values (limit and
       limit+0.01)
-- [ ] 2.2 Unit test: a declined over-limit attempt leaves every `Invoice` field unchanged
+- [x] 2.2 Unit test: a declined over-limit attempt leaves every `Invoice` field unchanged
       (snapshot before/after, not just "Update wasn't called"); verify via `dotnet test`
-- [ ] 2.3 Wire role through `ApprovalsController`, add Manager/Director to
+- [x] 2.3 Wire role through `ApprovalsController`, add Manager/Director to
       `[RequireRole(...)]`, add `demo.manager`/`demo.director` to `appsettings.json` and
       AGENTS.md's demo-accounts list; verify by running the app and signing in as each
 

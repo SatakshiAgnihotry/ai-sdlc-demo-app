@@ -28,10 +28,15 @@ public class ApprovalService
         return invoice;
     }
 
-    public Invoice Approve(string invoiceId, string approver)
+    public Invoice Approve(string invoiceId, string approver, string role)
     {
         var invoice = Find(invoiceId);
         EnsurePending(invoice);
+
+        if (!ApprovalLimitPolicy.CanApproveAlone(role, invoice.Amount))
+        {
+            throw new InvalidOperationException(ApprovalLimitPolicy.DeclineReason(role, invoice.Amount));
+        }
 
         invoice.Status = InvoiceStatus.Approved;
         invoice.DecidedBy = approver;
