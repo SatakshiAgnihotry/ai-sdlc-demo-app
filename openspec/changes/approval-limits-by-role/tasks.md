@@ -65,9 +65,9 @@
 
 ## 7. Self-review and PR
 
-- [ ] 7.1 Run the `pr-review` skill / `reviewer` sub-agent with the workshop prompt against the
+- [x] 7.1 Run the `pr-review` skill / `reviewer` sub-agent with the workshop prompt against the
       full diff; verify by producing the findings table
-- [ ] 7.2 Assign a verdict (fixed / dismissed-with-reason / deferred-with-reason) to every
+- [x] 7.2 Assign a verdict (fixed / dismissed-with-reason / deferred-with-reason) to every
       finding with the user; verify the PR description lists every finding and verdict
 
 ## Workflow follow-up

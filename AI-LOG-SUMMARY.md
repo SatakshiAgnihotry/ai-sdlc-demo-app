@@ -112,3 +112,10 @@ Opus 5.5).
   Playwright MCP browser tool: a 600,000 invoice's first Director approval kept it visible in the
   Approvals tab, and a second attempt by the same Director correctly showed the same-user decline
   reason inline.
+- **2026-11-09** — Step 9 (ASSIGNMENT.md and PR description): wrote `ASSIGNMENT.md` at the repo
+  root (feature summary, OpenSpec approach, both trainer-confirmed assumptions, implementation
+  steps, mutation scores before/after, e2e coverage, self-review summary, AI tooling used, and a
+  placeholder for the demo video link) and drafted the PR description text, including the full
+  self-review findings table with verdicts and the known Approver/Admin bypass trade-off. **Human
+  decision:** user reviewed both drafts and approved them as presented. This completes every
+  tasks.md item except the final archive step, deferred until the PR is merged.
