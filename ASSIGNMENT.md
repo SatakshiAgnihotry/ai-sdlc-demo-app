@@ -43,4 +43,4 @@ Ran the self-review prompt ("Review this PR against our checklist...") against t
 - OpenSpec for the spec-driven workflow — see `openspec/changes/approval-limits-by-role/`.
 
 ## Demo video
-[link to be added]
+https://nagarro-my.sharepoint.com/:v:/p/satakshi_agnihotri/IQC4xGqB2x77QroX_TslEMSpAWq22kdFNHOY_I17iMmNlr8
