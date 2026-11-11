@@ -1,5 +1,8 @@
 # Assignment: Role-based invoice approval limits
 
+## Pull request
+https://github.com/SatakshiAgnihotry/ai-sdlc-demo-app/pull/1
+
 ## Feature
 Role-based invoice approval limits (Manager/Director), including the two-approver rule for invoices above 500,000.
 
