@@ -40,7 +40,7 @@
   async function refresh() {
     const invoices = await api('/invoices');
     renderInvoices(invoices);
-    renderPending(invoices.filter((i) => i.status === 'PendingApproval'));
+    renderPending(invoices.filter((i) => i.status === 'PendingApproval' || i.status === 'PendingSecondApproval'));
   }
 
   function renderInvoices(invoices) {
@@ -65,27 +65,29 @@
     show('pending-empty', pending.length === 0);
     $('pending-list').replaceChildren(...pending.map((invoice) => {
       const reasonId = `reason-${invoice.id}`;
+      const decisionErrorId = `decision-error-${invoice.id}`;
       const approve = el('button', { type: 'button', 'aria-label': `Approve invoice ${invoice.id}` }, 'Approve');
       const reject = el('button', { type: 'button', class: 'danger', 'aria-label': `Reject invoice ${invoice.id}` }, 'Reject');
       const reason = el('input', { id: reasonId, 'aria-label': `Rejection reason for ${invoice.id}`, placeholder: 'Reason (required to reject)' });
+      const decisionError = el('p', { id: decisionErrorId, role: 'alert', 'aria-label': `Decision error for invoice ${invoice.id}`, hidden: 'hidden' });
 
-      approve.addEventListener('click', () => decide(`/approvals/${invoice.id}/approve`, {}));
-      reject.addEventListener('click', () => decide(`/approvals/${invoice.id}/reject`, { reason: reason.value }));
+      approve.addEventListener('click', () => decide(`/approvals/${invoice.id}/approve`, {}, decisionErrorId));
+      reject.addEventListener('click', () => decide(`/approvals/${invoice.id}/reject`, { reason: reason.value }, decisionErrorId));
 
       return el('li', {},
         el('span', {}, `${invoice.id} · ${invoice.customerName} · ${money.format(invoice.amount)}`),
-        el('span', {}, approve),
+        el('span', {}, approve, decisionError),
         el('div', { class: 'reject-row' }, reason, reject));
     }));
   }
 
-  async function decide(path, payload) {
-    showError('decision-error', '');
+  async function decide(path, payload, decisionErrorId) {
+    showError(decisionErrorId, '');
     try {
       await api(path, { method: 'POST', body: JSON.stringify(payload) });
       await refresh();
     } catch (error) {
-      showError('decision-error', error.message);
+      showError(decisionErrorId, error.message);
     }
   }
 

@@ -1,8 +1,9 @@
 namespace InvoiceApp.Domain;
 
 /// <summary>
-/// Moves an invoice through its lifecycle: Draft -> PendingApproval -> Approved or Rejected.
-/// One invoice at a time, decided as a whole by a single approver.
+/// Moves an invoice through its lifecycle: Draft -> PendingApproval -> (PendingSecondApproval ->)
+/// Approved, or Rejected. Invoices over the Director limit need two distinct approvals; Approver
+/// and Admin finalize any amount in a single step, unchanged from before this rule existed.
 /// </summary>
 public class ApprovalService
 {
@@ -28,15 +29,53 @@ public class ApprovalService
         return invoice;
     }
 
-    public Invoice Approve(string invoiceId, string approver)
+    public Invoice Approve(string invoiceId, string approver, string role)
     {
         var invoice = Find(invoiceId);
-        EnsurePending(invoice);
+        EnsureDecidable(invoice);
 
-        invoice.Status = InvoiceStatus.Approved;
-        invoice.DecidedBy = approver;
-        invoice.DecidedAt = DateTime.UtcNow;
-        _repository.Update(invoice);
+        if (role is "Approver" or "Admin")
+        {
+            FinalizeApproval(invoice, approver);
+            return invoice;
+        }
+
+        if (invoice.Status == InvoiceStatus.PendingSecondApproval)
+        {
+            if (role != ApprovalRoles.Director)
+            {
+                throw new InvalidOperationException(ApprovalLimitPolicy.SecondApprovalDeclineReason(role));
+            }
+
+            if (approver == invoice.FirstApprovedBy)
+            {
+                throw new InvalidOperationException(ApprovalLimitPolicy.SameApproverDeclineReason(approver));
+            }
+
+            FinalizeApproval(invoice, approver);
+            return invoice;
+        }
+
+        if (invoice.Amount > ApprovalLimitPolicy.DirectorLimit)
+        {
+            if (role != ApprovalRoles.Manager && role != ApprovalRoles.Director)
+            {
+                throw new InvalidOperationException(ApprovalLimitPolicy.DeclineReason(role, invoice.Amount));
+            }
+
+            invoice.Status = InvoiceStatus.PendingSecondApproval;
+            invoice.FirstApprovedBy = approver;
+            invoice.FirstApprovedAt = DateTime.UtcNow;
+            _repository.Update(invoice);
+            return invoice;
+        }
+
+        if (!ApprovalLimitPolicy.CanApproveAlone(role, invoice.Amount))
+        {
+            throw new InvalidOperationException(ApprovalLimitPolicy.DeclineReason(role, invoice.Amount));
+        }
+
+        FinalizeApproval(invoice, approver);
         return invoice;
     }
 
@@ -48,7 +87,7 @@ public class ApprovalService
         }
 
         var invoice = Find(invoiceId);
-        EnsurePending(invoice);
+        EnsureDecidable(invoice);
 
         invoice.Status = InvoiceStatus.Rejected;
         invoice.DecidedBy = approver;
@@ -58,13 +97,21 @@ public class ApprovalService
         return invoice;
     }
 
+    private void FinalizeApproval(Invoice invoice, string approver)
+    {
+        invoice.Status = InvoiceStatus.Approved;
+        invoice.DecidedBy = approver;
+        invoice.DecidedAt = DateTime.UtcNow;
+        _repository.Update(invoice);
+    }
+
     private Invoice Find(string invoiceId) =>
         _repository.GetById(invoiceId)
         ?? throw new KeyNotFoundException($"Invoice {invoiceId} was not found.");
 
-    private static void EnsurePending(Invoice invoice)
+    private static void EnsureDecidable(Invoice invoice)
     {
-        if (invoice.Status != InvoiceStatus.PendingApproval)
+        if (invoice.Status != InvoiceStatus.PendingApproval && invoice.Status != InvoiceStatus.PendingSecondApproval)
         {
             throw new InvalidOperationException(
                 $"Invoice {invoice.Id} is {invoice.Status}; only pending invoices can be decided.");
